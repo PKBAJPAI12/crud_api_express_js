@@ -83,8 +83,13 @@ async function loginApp(req, res) {
         obj = JSON.parse(data);
         if (validUser(obj.users, loginBody.email) != "notfound") {
             let userData = validUser(obj.users, loginBody.email);
-            if (userData.password === loginBody.password) {
-                if (userData.password === loginBody.cpassword) {
+            async function passwordMatch(userData){
+                let passwordStaus=await bcrypt.compare(loginBody.password,userData.password);
+                console.log(passwordStaus);
+                if(passwordStaus==true){
+                    let cpasswordStaus=await bcrypt.compare(loginBody.cpassword,userData.password);
+                   if(cpasswordStaus==true){
+                    const jwtToken=jwt.sign({id:userData.empId,email:userData.email},process.env.TOKEN_SECRET);
                     res.status(200).json({
                         "Status": "Login Successfull and User Info",
                         "Employee Id": userData.empId,
@@ -92,16 +97,19 @@ async function loginApp(req, res) {
                         "Full Name": userData.fullname,
                         "User Email": userData.email,
                         "User Phone Number": userData.phoneno,
-                        "User Gender": userData.gender
+                        "User Gender": userData.gender,
+                        "TOKEN":jwtToken
                     });
-                }
-                else {
+                   }
+                   else {
                     res.status(401).json({ "Status": "Password and Confirm Password is not matched" });
                 }
+                }
+                else {
+                    res.status(401).json({ "Status": "Password is Incorrect" });
+                }
             }
-            else {
-                res.status(401).json({ "Status": "Password is Incorrect" });
-            }
+            passwordMatch(userData);
         }
         else {
             res.status(401).json({ "Status": "Email is not valid" })
