@@ -15,7 +15,9 @@ let obj = {
 };
 filePath = __dirname + '/data.json'
 app.route('/register').post(userPost);
-app.route('/login').post(loginApp)
+app.route('/login').post(loginApp);
+app.route('/updateUser/:id').put(updateUser);
+app.route('/deleteUser/:id').delete(deleteUser);
 async function userPost(req, res) {
     let body = {
         "empId": Math.floor(Math.random() * 10000),
@@ -77,15 +79,15 @@ async function loginApp(req, res) {
                 if (userData.password === loginBody.cpassword) {
                     res.status(200).json({
                         "Status": "Login Successfull and User Info",
-                        "Employee Id":userData.empId,
-                        "Username":userData.username,
-                        "Full Name":userData.fullname,
-                        "User Email":userData.email,
-                        "User Phone Number":userData.phoneno,
-                        "User Gender":userData.gender
+                        "Employee Id": userData.empId,
+                        "Username": userData.username,
+                        "Full Name": userData.fullname,
+                        "User Email": userData.email,
+                        "User Phone Number": userData.phoneno,
+                        "User Gender": userData.gender
                     });
                 }
-                else{
+                else {
                     res.status(401).json({ "Status": "Password and Confirm Password is not matched" });
                 }
             }
@@ -95,6 +97,65 @@ async function loginApp(req, res) {
         }
         else {
             res.status(401).json({ "Status": "Email is not valid" })
+        }
+    })
+}
+async function updateUser(req, res) {
+    let empId = req.params.id;
+    let fullname = req.body.fullname;
+    let username = req.body.username;
+    let email = req.body.email;
+    let phoneno = req.body.phoneno;
+    let gender = req.body.gender;
+    function validateEmpId(data, id) {
+        let c = 0;
+        let idx;
+        data.forEach((item, i) => { if (item.empId === parseInt(id)) { c++; idx = i; } });
+        return (c == 1) ? { "bool": true, "idx": idx } : false;
+    }
+    fs.readFile(filePath).then((data) => {
+        obj = JSON.parse(data);
+        let validId = validateEmpId(obj.users, empId);
+        if (validId.bool == true) {
+            obj.users[validId.idx].fullname = fullname;
+            obj.users[validId.idx].username = username;
+            obj.users[validId.idx].email = email;
+            obj.users[validId.idx].phoneno = phoneno;
+            obj.users[validId.idx].gender = gender;
+            let jsondata = JSON.stringify(obj);
+            fs.writeFile(filePath, jsondata).then(() => {
+                res.status(201).json({ "Status": `${empId} Detail is Updated Successfully` });
+            }).catch((err) => {
+                res.status(400).json({ "Status": "Updation Unsuccessfull" });
+            });
+        }
+        else {
+            res.status(400).json({ "Status": `${empId} is not Valid` });
+        }
+    })
+}
+async function deleteUser(req, res) {
+    let empId = req.params.id;
+    function validateEmpId(data, id) {
+        let c = 0;
+        let idx;
+        data.forEach((item, i) => { if (item.empId === parseInt(id)) { c++; idx = i; } });
+        return (c == 1) ? { "bool": true, "idx": idx } : false;
+    }
+    fs.readFile(filePath).then((data) => {
+        obj = JSON.parse(data);
+        let validId = validateEmpId(obj.users, empId);
+        if (validId.bool == true) {
+            obj.users.splice(obj.users[validId.idx], 1);
+            let jsondata = JSON.stringify(obj);
+            fs.writeFile(filePath, jsondata).then(() => {
+                res.status(201).json({ "Status": `${empId} User is deleted successfully` });
+            }).catch((err) => {
+                res.status(400).json({ "Status": "Deletion Unsuccessfull" });
+            })
+        }
+        else {
+            res.status(400).json({ "Status": `${empId} is not available` });
         }
     })
 }
