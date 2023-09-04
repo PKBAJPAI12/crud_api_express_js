@@ -9,7 +9,7 @@ const jwt=require('jsonwebtoken');
 require('crypto').randomBytes(64).toString('hex');
 const port = process.env.PORT;
 const passport=require('passport');
-
+const passportfile=require('./passport.js')
 app.listen(port, () => {
     console.log(`Listen on the port ${port}`);
 })
@@ -22,9 +22,9 @@ let obj = {
 filePath = __dirname + '/data.json'
 app.route('/register').post(userPost);
 app.route('/login').post(loginApp);
-app.route('/updateUser/:id').put(updateUser);
-app.route('/deleteUser/:id').delete(deleteUser);
-app.route('/listAllUsers').get(displayUsers);
+app.route('/updateUser/:id').put(passport.authenticate('jwt',{session:false}) ,updateUser);
+app.route('/deleteUser/:id').delete(passport.authenticate('jwt',{session:false}) ,deleteUser);
+app.route('/listAllUsers').get(passport.authenticate('jwt',{session:false}) ,displayUsers);
 async function userPost(req, res) {
     let hashpassword=await bcrypt.hash(req.body.password,saltRounds);
     let body = {
