@@ -3,7 +3,13 @@ const app = express();
 const dotenv = require("dotenv").config();
 const fs = require("fs").promises;
 const bodyParser = require('body-parser');
+const bcrypt=require('bcrypt');
+const saltRounds=10;
+const jwt=require('jsonwebtoken');
+require('crypto').randomBytes(64).toString('hex');
 const port = process.env.PORT;
+const passport=require('passport');
+
 app.listen(port, () => {
     console.log(`Listen on the port ${port}`);
 })
@@ -18,7 +24,9 @@ app.route('/register').post(userPost);
 app.route('/login').post(loginApp);
 app.route('/updateUser/:id').put(updateUser);
 app.route('/deleteUser/:id').delete(deleteUser);
+app.route('/listAllUsers').get(displayUsers);
 async function userPost(req, res) {
+    let hashpassword=await bcrypt.hash(req.body.password,saltRounds);
     let body = {
         "empId": Math.floor(Math.random() * 10000),
         "fullname": req.body.fullname,
@@ -26,7 +34,7 @@ async function userPost(req, res) {
         "email": req.body.email,
         "phoneno": req.body.phoneno,
         "gender": req.body.gender,
-        "password": req.body.password
+        "password": hashpassword
     }
     function validEmail(data, mail) {
         let c = 0;
@@ -157,5 +165,13 @@ async function deleteUser(req, res) {
         else {
             res.status(400).json({ "Status": `${empId} is not available` });
         }
+    })
+}
+async function displayUsers(req,res){
+    fs.readFile(filePath).then((data)=>{
+        obj=JSON.parse(data);
+        res.status(200).json({"Status":"All Users Available", "users":obj.users});
+    }).catch((err)=>{
+        res.status(400).json({"Status":"Users is not available"});
     })
 }
