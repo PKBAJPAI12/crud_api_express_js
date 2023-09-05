@@ -39,7 +39,7 @@ This Node.js project is a CRUD (Create, Read, Update, Delete) REST API for manag
 
 - **User Updates**: `PUT /updateUser/:id`
   - Authorization Header: `Bearer yourjsonwebtoken`
-  - Request Body: `{ "email": "newemail@example.com" }`
+  - Request Body: `{ "id":id}`
   - Response: `{ "message": "User updated successfully" }`
 
 - **User Deletion**: `DELETE /deleteUser/:id`
