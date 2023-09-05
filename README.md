@@ -25,7 +25,7 @@ This Node.js project is a CRUD (Create, Read, Update, Delete) REST API for manag
 ## Usage
 
 1. Start the server: `npm start`
-2. Access the API endpoints using a tool like Postman or cURL.
+2. Access the API endpoints using a tool like Postman.
 
 ## API Endpoints
 
