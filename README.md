@@ -61,7 +61,7 @@ This Node.js project is a CRUD (Create, Read, Update, Delete) REST API for manag
 
 The API can be accessed at the following URL:
 
-- User Registration: `POST http://localhost:8080/register`
+- User Registration: `POST http://localhost:4000/register`
 
 To generate a user ID during user registration, a random function is used.
 
