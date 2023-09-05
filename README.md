@@ -34,7 +34,7 @@ This Node.js project is a CRUD (Create, Read, Update, Delete) REST API for manag
   - Response: `{ "message": "Registration successful" }`
 
 - **User Login**: `POST /login`
-  - Request Body: `{ "email": "user@example.com", "password": "securepassword" }`
+  - Request Body: `{ "id":id}`
   - Response: `{ "token": "yourjsonwebtoken" }`
 
 - **User Updates**: `PUT /updateUser/:id`
